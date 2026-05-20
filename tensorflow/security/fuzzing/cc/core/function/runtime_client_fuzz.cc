@@ -78,7 +78,11 @@ class FuzzRuntimeClient {
   }
 
   void CreateFunctionOuterFuzz(FunctionDef def) {
-    TF_CHECK_OK(rt_.CreateFunction(def));
+    // Ignore errors because the fuzzer may generate invalid FunctionDef protos.
+    // Returning a non-OK status for invalid input is expected and acceptable;
+    // we are only looking for unexpected crashes, hangs, or memory safety
+    // issues.
+    rt_.CreateFunction(def).IgnoreError();
   }
 
  private:
