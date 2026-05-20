@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
@@ -197,12 +198,23 @@ std::unique_ptr<ProfilerInterface> CreateTpuTracer(
     return nullptr;
   }
 
-  if (stream_executor::tpu::ProfilerApiFn()->TpuProfiler_CreateFn == nullptr) {
+  // Using std::atomic_ref would be preferred, but it is not yet available in
+  // our libc++. Note that `reinterpret_cast<std::atomic<T>*>` is technically UB
+  // in C++, though it often works in practice on our supported platforms for
+  // pointer-sized types. We rely on the alignment of the underlying struct
+  // members being sufficient for atomic operations.
+  auto* create_fn_ptr = reinterpret_cast<std::atomic<void*>*>(
+      &const_cast<TfTpu_ProfilerApiFn*>(stream_executor::tpu::ProfilerApiFn())
+           ->TpuProfiler_CreateFn);
+  if (create_fn_ptr->load(std::memory_order_relaxed) == nullptr) {
     InitTpuProfilerApiFns();
   }
 
   // Don't attempt to create a TpuTracer if the TPU C API isn't initialized.
-  if (stream_executor::tpu::ProfilerApiFn()->TpuProfiler_CreateFn == nullptr) {
+  // This acquire load correctly pairs with the release store in
+  // SetTpuProfilerApiFns to ensure all other function pointers are visible
+  // before we return a TpuTracer.
+  if (create_fn_ptr->load(std::memory_order_acquire) == nullptr) {
     return nullptr;
   }
   return std::make_unique<TpuTracer>();

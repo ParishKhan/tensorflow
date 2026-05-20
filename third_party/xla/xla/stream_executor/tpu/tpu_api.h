@@ -16,6 +16,8 @@ limitations under the License.
 #ifndef XLA_STREAM_EXECUTOR_TPU_TPU_API_H_
 #define XLA_STREAM_EXECUTOR_TPU_TPU_API_H_
 
+#include "absl/base/call_once.h"
+#include "absl/status/status.h"
 #include "xla/stream_executor/tpu/libtftpu.h"
 #include "xla/stream_executor/tpu/tpu_executor_api.h"
 #include "xla/stream_executor/tpu/tpu_ops_c_api.h"
@@ -23,6 +25,11 @@ limitations under the License.
 
 namespace stream_executor {
 namespace tpu {
+
+extern absl::once_flag g_tpu_executor_init_once;
+extern absl::once_flag g_tpu_profiler_init_once;
+extern absl::once_flag g_tpu_ops_struct_fns_once;
+extern absl::Status* g_tpu_ops_struct_fns_init_status;
 
 TfTpu_BaseFn* InitializeApiFn();
 

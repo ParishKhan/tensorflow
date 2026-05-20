@@ -15,11 +15,17 @@ limitations under the License.
 
 #include "xla/stream_executor/tpu/tpu_api.h"
 
+#include "absl/base/call_once.h"
+#include "absl/status/status.h"
 #include "xla/stream_executor/tpu/tpu_ops_c_api.h"
 #include "xla/stream_executor/tpu/tpu_profiler_c_api.h"
 
 namespace stream_executor {
 namespace tpu {
+
+absl::once_flag g_tpu_profiler_init_once;
+absl::once_flag g_tpu_ops_struct_fns_once;
+absl::Status* g_tpu_ops_struct_fns_init_status = new absl::Status();
 
 TfTpu_BaseFn* InitializeApiFn() {
   static TfTpu_BaseFn base_fn;

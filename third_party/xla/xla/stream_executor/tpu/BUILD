@@ -231,6 +231,10 @@ cc_library(
     name = "tpu_executor_init_fns",
     hdrs = ["tpu_executor_init_fns.inc"],
     visibility = ["//visibility:public"],
+    deps = [
+        ":tpu_api",
+        "@com_google_absl//absl/base",
+    ],
 )
 
 cc_library(
@@ -365,8 +369,12 @@ cc_library(
     hdrs = ["tpu_library_init_fns.inc"],
     visibility = ["//visibility:public"],
     deps = [
+        ":tpu_api",
         ":tpu_executor_init_fns",
         ":tpu_ops_c_api_hdrs",
+        "@com_google_absl//absl/base",
+        "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/status",
     ],
 )
 
@@ -377,6 +385,7 @@ cc_library(
     deps = [
         ":tpu_api",
         ":tpu_profiler_c_api_hdrs",
+        "@com_google_absl//absl/base",
     ],
 )
 
@@ -411,6 +420,8 @@ cc_library(
         ":tpu_executor_api",
         ":tpu_ops_c_api_hdrs",
         ":tpu_profiler_c_api_hdrs",
+        "@com_google_absl//absl/base",
+        "@com_google_absl//absl/status",
     ],
 )
 
@@ -673,6 +684,7 @@ cc_library(
     deps = [
         ":libtftpu_header",
         ":tpu_executor_c_api_hdrs",
+        "@com_google_absl//absl/base",
     ],
 )
 

@@ -15,10 +15,15 @@ limitations under the License.
 
 #include "xla/stream_executor/tpu/tpu_executor_api.h"
 
+#include <atomic>
+
+#include "absl/base/call_once.h"
 #include "xla/stream_executor/tpu/tpu_executor_c_api.h"
 
 namespace stream_executor {
 namespace tpu {
+
+absl::once_flag g_tpu_executor_init_once;
 
 TfTpu_ExecutorApiFn* ExecutorApiFn() {
   static TfTpu_ExecutorApiFn executor_api_fn;
@@ -42,7 +47,13 @@ bool IsInitialized(TfTpu_ExecutorApiFn* executor_api_fn) {
   // Check if an arbitrary function pointer is initialized. We could check more
   // functions or add an explicit 'initialized' field to TfTpu_ExecutorApiFn,
   // but this works well enough.
-  return executor_api_fn->TpuPlatform_NewFn != nullptr;
+  bool is_initialized =
+      // The acquire load here pairs with the `release` store during
+      // initialization. It ensures that once `is_initialized` is true, all
+      // other function pointers in `executor_api_fn` are visible.
+      reinterpret_cast<std::atomic<void*>*>(&executor_api_fn->TpuPlatform_NewFn)
+          ->load(std::memory_order_acquire) != nullptr;
+  return is_initialized;
 }
 
 }  // namespace tpu
