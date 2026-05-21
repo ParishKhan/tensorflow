@@ -575,6 +575,9 @@ def tf_features_nolayering_check_if_ios():
         "//conditions:default": [],
     })
 
+def tf_features_nolayering_check_if_mobile():
+    return if_mobile(["-layering_check"])
+
 def tf_opts_nortti_if_lite_protos():
     return tf_portable_full_lite_protos(
         full = [],

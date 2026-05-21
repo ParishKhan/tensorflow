@@ -1579,6 +1579,15 @@ filegroup(
 filegroup(
     name = "mobile_srcs_no_runtime",
     srcs = [
+        "tensor_coding.cc",
+        "@tsl//tsl/platform:mobile_srcs_no_runtime",
+    ],
+    visibility = ["//tensorflow/core:__pkg__"],
+)
+
+filegroup(
+    name = "mobile_hdrs_no_runtime",
+    srcs = [
         "abi.h",
         "bfloat16.h",
         "blocking_counter.h",
@@ -1629,7 +1638,6 @@ filegroup(
         "strcat.h",
         "stringpiece.h",
         "stringprintf.h",
-        "tensor_coding.cc",
         "tensor_coding.h",
         "thread_annotations.h",
         "threadpool.h",
@@ -1638,21 +1646,32 @@ filegroup(
         "tstring.h",
         "types.h",
         ":ctstring",
-        "@tsl//tsl/platform:mobile_srcs_no_runtime",
-    ] + tf_platform_alias("additional_mobile_srcs_no_runtime"),
+        "@tsl//tsl/platform:mobile_hdrs_no_runtime",
+    ] + tf_platform_alias("additional_mobile_hdrs_no_runtime"),
     visibility = ["//tensorflow/core:__pkg__"],
 )
 
 filegroup(
     name = "mobile_srcs_only_runtime",
     srcs = [
-        "base64.h",
         "cpu_feature_guard.cc",
+        "platform_strings.cc",
+        "@tsl//tsl/platform:mobile_srcs_only_runtime",
+        "@xla//xla/tsl/platform/default:mobile_srcs_only_runtime",
+    ] + if_not_fuchsia([
+        "subprocess.h",
+    ]) + tf_google_mobile_srcs_only_runtime(),
+    visibility = ["//tensorflow/core:__pkg__"],
+)
+
+filegroup(
+    name = "mobile_hdrs_only_runtime",
+    srcs = [
+        "base64.h",
         "cpu_feature_guard.h",
         "error_logging.h",
         "fingerprint.h",
         "notification.h",
-        "platform_strings.cc",
         "platform_strings.h",
         "platform_strings_computed.h",
         "png.h",
@@ -1664,8 +1683,8 @@ filegroup(
         "//tensorflow/core/platform/profile_utils:android_armv7a_cpu_utils_helper.h",
         "//tensorflow/core/platform/profile_utils:cpu_utils.h",
         "//tensorflow/core/platform/profile_utils:i_cpu_utils_helper.h",
-        "@tsl//tsl/platform:mobile_srcs_only_runtime",
-        "@xla//xla/tsl/platform/default:mobile_srcs_only_runtime",
+        "@tsl//tsl/platform:mobile_hdrs_only_runtime",
+        "@xla//xla/tsl/platform/default:mobile_hdrs_only_runtime",
     ] + if_not_fuchsia([
         "subprocess.h",
     ]) + tf_google_mobile_srcs_only_runtime(),

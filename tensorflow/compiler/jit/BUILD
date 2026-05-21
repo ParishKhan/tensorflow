@@ -60,6 +60,14 @@ filegroup(
     visibility = [":friends"],
 )
 
+filegroup(
+    name = "mobile_hdrs_no_runtime",
+    srcs = [
+        "defs.h",
+    ],
+    visibility = [":friends"],
+)
+
 # Target that bundles up the XLA CPU and GPU JIT devices.
 # This target is deprecated as it pulls in all the XLA devices and bloats the dependencies.
 # Please use the individual targets in the deps list as needed. See b/336889334.

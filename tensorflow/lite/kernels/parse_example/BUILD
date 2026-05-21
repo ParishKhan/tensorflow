@@ -1,5 +1,5 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("//tensorflow:tensorflow.bzl", "tf_cc_test", "tf_features_nolayering_check_if_ios")
+load("//tensorflow:tensorflow.bzl", "tf_cc_test", "tf_features_nolayering_check_if_mobile")
 load("//tensorflow:tensorflow.default.bzl", "get_compatible_with_portable")
 load("//tensorflow/lite:special_rules.bzl", "nonportable_visibility_allowlist")
 
@@ -23,9 +23,8 @@ cc_library(
         "parse_example.h",
     ],
     compatible_with = get_compatible_with_portable(),
-    features = tf_features_nolayering_check_if_ios(),
+    features = tf_features_nolayering_check_if_mobile(),
     deps = [
-        "//tensorflow/core/platform:hash",
         "//tensorflow/lite:framework",
         "//tensorflow/lite:string_util",
         "//tensorflow/lite/core/c:common",
@@ -54,6 +53,7 @@ cc_library(
             "//tensorflow/core:lib",
             "//tensorflow/core:lib_internal",
             "//tensorflow/core:protos_all_cc",
+            "//tensorflow/core/platform:hash",
         ],
     }),
 )
@@ -61,7 +61,7 @@ cc_library(
 tf_cc_test(
     name = "parse_example_test",
     srcs = ["parse_example_test.cc"],
-    features = tf_features_nolayering_check_if_ios(),
+    features = tf_features_nolayering_check_if_mobile(),
     deps = [
         ":parse_example",
         "//tensorflow/lite:framework",
